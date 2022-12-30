@@ -4,10 +4,24 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var Auth = require('./auth');
+var {indexRouter, usersRouter} = require('./routes');
 
 var app = express();
+
+app.all(/.*/, function(req, res, next) {
+  const {hash, tm, pubKey} = req.query ?? {};
+  const isAuth = Auth.isAcceptedReq(hash, tm, pubKey);
+
+  if (isAuth) {
+    next();
+    return;
+  }
+
+  // render the error page
+  res.status(403);
+  res.render('error', {error: {}, message: '403 Forbidden'});
+})
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

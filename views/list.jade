@@ -1,0 +1,15 @@
+extends layout
+
+block content
+    h1= title
+    p List of #{title}
+    a(href="localhost:3000/") Home
+  
+    section 
+        - var droids = list;
+        ul
+        for droid in droids
+            - var {name, id} = droid
+            - var href = `localhost:3000/users/${id}`
+            li
+                a(href= href) #{name}
